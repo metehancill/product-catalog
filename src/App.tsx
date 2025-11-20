@@ -1,37 +1,39 @@
-import { useState } from 'react';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import Products from './pages/Products';
-import ProductDetail from './pages/ProductDetail';
-import About from './pages/About';
-import Contact from './pages/Contact';
+import { useState } from "react";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Home from "./pages/Home";
+import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
-type Page = 'home' | 'products' | 'product' | 'about' | 'contact';
+type Page = "home" | "products" | "product" | "about" | "contact";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [productSlug, setProductSlug] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<Page>("home");
+  const [productSlug, setProductSlug] = useState<string>("");
 
   const handleNavigate = (page: string, slug?: string) => {
     setCurrentPage(page as Page);
     if (slug) {
       setProductSlug(slug);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'home':
+      case "home":
         return <Home onNavigate={handleNavigate} />;
-      case 'products':
+      case "products":
         return <Products onNavigate={handleNavigate} />;
-      case 'product':
-        return <ProductDetail productSlug={productSlug} onNavigate={handleNavigate} />;
-      case 'about':
+      case "product":
+        return (
+          <ProductDetail productSlug={productSlug} onNavigate={handleNavigate} />
+        );
+      case "about":
         return <About />;
-      case 'contact':
+      case "contact":
         return <Contact />;
       default:
         return <Home onNavigate={handleNavigate} />;
@@ -41,9 +43,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header currentPage={currentPage} onNavigate={handleNavigate} />
-      <main className="flex-grow">
-        {renderPage()}
-      </main>
+      <main className="flex-grow">{renderPage()}</main>
       <Footer onNavigate={handleNavigate} />
     </div>
   );

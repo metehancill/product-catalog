@@ -1,9 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+// src/supabase.ts
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+// ENV değişkenlerini al
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Güvenli Supabase oluşturucu
+let supabase: SupabaseClient | null = null;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    "%c[Supabase Disabled] %cVITE_SUPABASE_URL veya VITE_SUPABASE_ANON_KEY tanımlı değil. Supabase devre dışı.",
+    "color: orange; font-weight: bold;",
+    "color: inherit;"
+  );
+} else {
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+}
+
+// Default export yerine "named" export kullanıyoruz
+export { supabase };
 
 export type Category = {
   id: string;
