@@ -27,7 +27,7 @@ export default function Home({ onNavigate }: HomeProps) {
       if (error) throw error;
       setFeaturedProducts(data || []);
     } catch (error) {
-      console.error('Error loading featured products:', error);
+      console.error('Popüler ürünler yüklenirken bir hata oluştu : ', error);
     } finally {
       setLoading(false);
     }
@@ -35,21 +35,21 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div>
-      <section className="relative h-[600px] bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 text-white">
+      <section className="relative h-[300px] bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              We Are Here for the Solutions of the Future
+              Ürünlerimizi Keşfedin...
             </h1>
-            <p className="text-xl mb-8 text-blue-100">
-              Innovative products and services that transform your business for tomorrow
+            <p className="text-xl mb-8 text-red-100">
+              Yüksek Kalite Uygun Maliyetiyle Ürünlerimizi inceleyin...
             </p>
             <button
               onClick={() => onNavigate('products')}
-              className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors inline-flex items-center space-x-2"
+              className="bg-white text-red-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-50 transition-colors inline-flex items-center space-x-2"
             >
-              <span>Discover Now</span>
+              <span>Hemen Keşfedin</span>
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
@@ -60,11 +60,8 @@ export default function Home({ onNavigate }: HomeProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured Products
+              Popüler Ürünlerimiz
             </h2>
-            <p className="text-lg text-gray-600">
-              Discover our most innovative solutions
-            </p>
           </div>
 
           {loading ? (
@@ -83,7 +80,7 @@ export default function Home({ onNavigate }: HomeProps) {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-500">No featured products available</p>
+              <p className="text-gray-500">Popüler ürün yok...</p>
             </div>
           )}
         </div>
@@ -94,22 +91,18 @@ export default function Home({ onNavigate }: HomeProps) {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="md:w-2/3 mb-8 md:mb-0">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                About Us
+                Hakkımızda
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed mb-4">
-                At FutureSolutions, we are committed to delivering cutting-edge products and
-                services that empower businesses to thrive in an ever-evolving marketplace.
-                With decades of combined expertise and a passion for innovation, our team
-                works tirelessly to provide solutions that exceed expectations and drive
-                real results.
+                Hakkımızda bölümü kısa yazı
               </p>
             </div>
             <div className="md:w-auto">
               <button
                 onClick={() => onNavigate('about')}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors inline-flex items-center space-x-2"
+                className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors inline-flex items-center space-x-2"
               >
-                <span>Read More</span>
+                <span>Daha Fazla</span>
                 <ArrowRight className="h-5 w-5" />
               </button>
             </div>
