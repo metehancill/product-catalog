@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase, Product } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
-import { ArrowRight, Award, Shield, Truck } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 type HomeProps = {
   onNavigate: (page: string, productSlug?: string) => void;
@@ -10,9 +10,40 @@ type HomeProps = {
 export default function Home({ onNavigate }: HomeProps) {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      image: 'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      title: 'Yüksek Kalite Ürünler',
+      description: 'En iyi malzeme ve üretim standardları ile tasarlanmış',
+    },
+    {
+      image: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      title: 'Hızlı ve Güvenli Teslimat',
+      description: 'Siparişiniz zamanında ve güvenli şekilde teslim edilir',
+    },
+    {
+      image: 'https://images.pexels.com/photos/5632380/pexels-photo-5632380.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      title: 'Müşteri Memnuniyeti',
+      description: 'Sizin tatmininiz bizim en büyük hedefimiz',
+    },
+    {
+      image: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=1200',
+      title: 'Geniş Ürün Yelpazesi',
+      description: 'Tüm ihtiyaçlarınızı karşılayan ürünler',
+    },
+  ];
 
   useEffect(() => {
     loadFeaturedProducts();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
   }, []);
 
   const loadFeaturedProducts = async () => {
@@ -33,62 +64,77 @@ export default function Home({ onNavigate }: HomeProps) {
     }
   };
 
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
   return (
     <div>
-      <section className="relative h-[300px] bg-gradient-to-br from-red-600 via-red-700 to-red-900 text-white">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-              Ürünlerimizi Keşfedin...
+      <section className="relative h-[500px] md:h-[600px] overflow-hidden">
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black opacity-40"></div>
+          </div>
+        ))}
+
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white max-w-2xl px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              {slides[currentSlide].title}
             </h1>
-            <p className="text-xl mb-8 text-red-100">
-              Yüksek Kalite Uygun Maliyetiyle Ürünlerimizi inceleyin...
+            <p className="text-lg md:text-xl mb-8 text-gray-100">
+              {slides[currentSlide].description}
             </p>
             <button
               onClick={() => onNavigate('products')}
-              className="bg-white text-red-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-red-50 transition-colors inline-flex items-center space-x-2"
+              className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors inline-flex items-center space-x-2"
             >
-              <span>Hemen Keşfedin</span>
+              <span>Ürünleri Gör</span>
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
         </div>
-      </section>
 
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-6">
-                <Award className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Yüksek Kalite</h3>
-              <p className="text-gray-600">
-                En kaliteli malzemeler ve üretim standartları ile sizlere hizmet sunuyoruz
-              </p>
-            </div>
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white bg-opacity-30 hover:bg-opacity-50 text-white p-2 rounded-full transition-all"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
 
-            <div className="text-center p-8 bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-6">
-                <Shield className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Güvenilir Hizmet</h3>
-              <p className="text-gray-600">
-                Yıllardır süregelen deneyimimiz ve müşteri memnuniyeti odaklı yaklaşımımız
-              </p>
-            </div>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white bg-opacity-30 hover:bg-opacity-50 text-white p-2 rounded-full transition-all"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
 
-            <div className="text-center p-8 bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-6">
-                <Truck className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Hızlı Teslimat</h3>
-              <p className="text-gray-600">
-                Zamanında ve güvenli teslimat ile ihtiyaçlarınızı karşılamak için buradayız
-              </p>
-            </div>
-          </div>
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-2 rounded-full transition-all ${
+                index === currentSlide
+                  ? 'bg-white w-8'
+                  : 'bg-white bg-opacity-50 w-2 hover:bg-opacity-75'
+              }`}
+            />
+          ))}
         </div>
       </section>
 
