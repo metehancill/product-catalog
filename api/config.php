@@ -10,9 +10,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 define('DB_HOST', 'localhost');
-define('DB_USER', 'your_username');
-define('DB_PASS', 'your_password');
-define('DB_NAME', 'your_database');
+define('DB_USER', 'root');
+define('DB_PASS', 'GucluBirSifre123!');
+define('DB_NAME', 'bes_yildizlar');
 
 function getConnection() {
     try {
