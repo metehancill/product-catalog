@@ -1,16 +1,6 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { api, CatalogPDF } from '../lib/api';
 import { Download, FileText } from 'lucide-react';
-
-type CatalogPDF = {
-  id: string;
-  title: string;
-  file_url: string;
-  file_name: string;
-  file_size: number;
-  is_active: boolean;
-  created_at: string;
-};
 
 export default function Catalog() {
   const [pdf, setPdf] = useState<CatalogPDF | null>(null);
@@ -22,29 +12,13 @@ export default function Catalog() {
 
   const loadCatalog = async () => {
     try {
-      const { data, error } = await supabase
-        .from('catalog_pdfs')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (error) throw error;
+      const data = await api.getCatalogPDF();
       setPdf(data);
     } catch (error) {
       console.error('Katalog yüklenirken hata oluştu:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   const handleDownload = () => {
@@ -82,16 +56,6 @@ export default function Catalog() {
           </div>
         ) : pdf ? (
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-100 px-6 py-4 border-b flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <FileText className="h-6 w-6 text-red-600" />
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">{pdf.title}</h2>
-                  <p className="text-sm text-gray-600">{pdf.file_name} • {formatFileSize(pdf.file_size)}</p>
-                </div>
-              </div>
-            </div>
-
             <div className="w-full" style={{ height: 'calc(100vh - 300px)' }}>
               <iframe
                 src={`${pdf.file_url}#toolbar=1&navpanes=1&view=FitH`}

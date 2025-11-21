@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase, Product, Category } from '../lib/supabase';
+import { api, Product } from '../lib/api';
 import { ArrowLeft, Package } from 'lucide-react';
 
 type ProductDetailProps = {
@@ -9,7 +9,6 @@ type ProductDetailProps = {
 
 export default function ProductDetail({ productSlug, onNavigate }: ProductDetailProps) {
   const [product, setProduct] = useState<Product | null>(null);
-  const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,28 +18,8 @@ export default function ProductDetail({ productSlug, onNavigate }: ProductDetail
   const loadProduct = async () => {
     try {
       setLoading(true);
-      const { data: productData, error: productError } = await supabase
-        .from('products')
-        .select('*')
-        .eq('slug', productSlug)
-        .maybeSingle();
-
-      if (productError) throw productError;
-
-      if (productData) {
-        setProduct(productData);
-
-        if (productData.category_id) {
-          const { data: categoryData, error: categoryError } = await supabase
-            .from('categories')
-            .select('*')
-            .eq('id', productData.category_id)
-            .maybeSingle();
-
-          if (categoryError) throw categoryError;
-          setCategory(categoryData);
-        }
-      }
+      const data = await api.getProduct(parseInt(productSlug));
+      setProduct(data);
     } catch (error) {
       console.error('Error loading product:', error);
     } finally {
@@ -98,25 +77,13 @@ export default function ProductDetail({ productSlug, onNavigate }: ProductDetail
             </div>
 
             <div className="p-8 lg:p-12">
-              {category && (
-                <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
-                  {category.name}
-                </span>
-              )}
               <h1 className="text-4xl font-bold text-gray-900 mb-6">{product.name}</h1>
 
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Overview</h2>
-                  <p className="text-gray-600 leading-relaxed">{product.short_description}</p>
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                    Detailed Description
-                  </h2>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Description</h2>
                   <div className="text-gray-600 leading-relaxed whitespace-pre-line">
-                    {product.full_description || 'No detailed description available.'}
+                    {product.description || 'No description available.'}
                   </div>
                 </div>
 
