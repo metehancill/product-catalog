@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase, Product } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Award, Shield, Truck } from 'lucide-react';
 
 type HomeProps = {
   onNavigate: (page: string, productSlug?: string) => void;
@@ -52,6 +52,42 @@ export default function Home({ onNavigate }: HomeProps) {
               <span>Hemen Keşfedin</span>
               <ArrowRight className="h-5 w-5" />
             </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-8 bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-6">
+                <Award className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Yüksek Kalite</h3>
+              <p className="text-gray-600">
+                En kaliteli malzemeler ve üretim standartları ile sizlere hizmet sunuyoruz
+              </p>
+            </div>
+
+            <div className="text-center p-8 bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-6">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Güvenilir Hizmet</h3>
+              <p className="text-gray-600">
+                Yıllardır süregelen deneyimimiz ve müşteri memnuniyeti odaklı yaklaşımımız
+              </p>
+            </div>
+
+            <div className="text-center p-8 bg-gradient-to-br from-red-50 to-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-600 rounded-full mb-6">
+                <Truck className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Hızlı Teslimat</h3>
+              <p className="text-gray-600">
+                Zamanında ve güvenli teslimat ile ihtiyaçlarınızı karşılamak için buradayız
+              </p>
+            </div>
           </div>
         </div>
       </section>
