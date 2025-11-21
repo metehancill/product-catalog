@@ -12,6 +12,7 @@ type HeaderProps = {
 const navItems = [
   { name: "Anasayfa", path: "home" },
   { name: "Ürünler", path: "products" },
+  { name: "E-Katalog", path: "catalog" },
   { name: "Hakkımızda", path: "about" },
   { name: "İletişim", path: "contact" },
 ];

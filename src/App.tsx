@@ -6,8 +6,10 @@ import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Catalog from "./pages/Catalog";
+import Admin from "./pages/Admin";
 
-type Page = "home" | "products" | "product" | "about" | "contact";
+type Page = "home" | "products" | "product" | "about" | "contact" | "catalog" | "admin";
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
@@ -35,6 +37,10 @@ function App() {
         return <About />;
       case "contact":
         return <Contact />;
+      case "catalog":
+        return <Catalog />;
+      case "admin":
+        return <Admin />;
       default:
         return <Home onNavigate={handleNavigate} />;
     }
