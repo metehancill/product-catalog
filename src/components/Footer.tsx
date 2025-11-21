@@ -1,16 +1,19 @@
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Language, translations } from '../translations';
 
 type FooterProps = {
   onNavigate: (page: string) => void;
+  language: Language;
 };
 
-export default function Footer({ onNavigate }: FooterProps) {
+export default function Footer({ onNavigate, language }: FooterProps) {
+  const t = translations[language];
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">İletişim Bilgileri</h3>
+            <h3 className="text-white text-lg font-semibold mb-4">{t.footer.contact}</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
@@ -32,37 +35,37 @@ export default function Footer({ onNavigate }: FooterProps) {
           </div>
 
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Hızlı Erişim</h3>
+            <h3 className="text-white text-lg font-semibold mb-4">{t.footer.quickLinks}</h3>
             <nav className="space-y-2">
               <button
                 onClick={() => onNavigate('home')}
                 className="block text-sm hover:text-red-400 transition-colors text-left"
               >
-                Anasayfa
+                {t.header.home}
               </button>
               <button
                 onClick={() => onNavigate('products')}
                 className="block text-sm hover:text-red-400 transition-colors text-left"
               >
-                Ürünler
+                {t.header.products}
               </button>
               <button
                 onClick={() => onNavigate('about')}
                 className="block text-sm hover:text-red-400 transition-colors text-left"
               >
-                Hakkımızda
+                {t.header.about}
               </button>
               <button
                 onClick={() => onNavigate('contact')}
                 className="block text-sm hover:text-red-400 transition-colors text-left"
               >
-                İletişim
+                {t.header.contact}
               </button>
             </nav>
           </div>
 
           <div>
-            <h3 className="text-white text-lg font-semibold mb-4">Bizi Takip Edin !</h3>
+            <h3 className="text-white text-lg font-semibold mb-4">{t.footer.followUs}</h3>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-red-400 transition-colors">
                 <Facebook className="h-6 w-6" />
@@ -91,7 +94,7 @@ export default function Footer({ onNavigate }: FooterProps) {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
-          <p>&copy; 2025 Beş Yıldızlar. Tüm hakları saklıdır.</p>
+          <p>&copy; 2025 Beş Yıldızlar. {t.footer.rights}</p>
           <div className="mt-2 space-x-4">
             <button className="hover:text-blue-400 transition-colors">Gizlilik politikası</button>
             <span>|</span>

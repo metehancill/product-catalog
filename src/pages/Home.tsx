@@ -2,36 +2,39 @@ import { useEffect, useState } from 'react';
 import { api, Product } from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Language, translations } from '../translations';
 
 type HomeProps = {
   onNavigate: (page: string, productSlug?: string) => void;
+  language: Language;
 };
 
-export default function Home({ onNavigate }: HomeProps) {
+export default function Home({ onNavigate, language }: HomeProps) {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const t = translations[language].home;
 
   const slides = [
     {
       image: 'https://images.pexels.com/photos/3962286/pexels-photo-3962286.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      title: 'Yüksek Kalite Ürünler',
-      description: 'En iyi malzeme ve üretim standardları ile tasarlanmış',
+      title: t.hero1Title,
+      description: t.hero1Desc,
     },
     {
       image: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      title: 'Hızlı ve Güvenli Teslimat',
-      description: 'Siparişiniz zamanında ve güvenli şekilde teslim edilir',
+      title: t.hero2Title,
+      description: t.hero2Desc,
     },
     {
       image: 'https://images.pexels.com/photos/5632380/pexels-photo-5632380.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      title: 'Müşteri Memnuniyeti',
-      description: 'Sizin tatmininiz bizim en büyük hedefimiz',
+      title: t.hero3Title,
+      description: t.hero3Desc,
     },
     {
       image: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=1200',
-      title: 'Geniş Ürün Yelpazesi',
-      description: 'Tüm ihtiyaçlarınızı karşılayan ürünler',
+      title: t.hero4Title,
+      description: t.hero4Desc,
     },
   ];
 
@@ -96,7 +99,7 @@ export default function Home({ onNavigate }: HomeProps) {
               onClick={() => onNavigate('products')}
               className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors inline-flex items-center space-x-2"
             >
-              <span>Ürünleri Gör</span>
+              <span>{t.viewAll}</span>
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
@@ -135,7 +138,7 @@ export default function Home({ onNavigate }: HomeProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Popüler Ürünlerimiz
+              {t.featuredTitle}
             </h2>
           </div>
 
@@ -155,7 +158,7 @@ export default function Home({ onNavigate }: HomeProps) {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-500">Popüler ürün yok...</p>
+              <p className="text-gray-500">{t.noProducts}</p>
             </div>
           )}
         </div>
@@ -166,10 +169,10 @@ export default function Home({ onNavigate }: HomeProps) {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="md:w-2/3 mb-8 md:mb-0">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Hakkımızda
+                {translations[language].header.about}
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed mb-4">
-                Hakkımızda bölümü kısa yazı
+                {translations[language].about.story1.substring(0, 200)}...
               </p>
             </div>
             <div className="md:w-auto">
@@ -177,7 +180,7 @@ export default function Home({ onNavigate }: HomeProps) {
                 onClick={() => onNavigate('about')}
                 className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors inline-flex items-center space-x-2"
               >
-                <span>Daha Fazla</span>
+                <span>{t.learnMore}</span>
                 <ArrowRight className="h-5 w-5" />
               </button>
             </div>

@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { api, Product } from '../lib/api';
 import { ArrowLeft, Package } from 'lucide-react';
+import { Language } from '../translations';
 
 type ProductDetailProps = {
   productSlug: string;
   onNavigate: (page: string) => void;
+  language: Language;
 };
 
-export default function ProductDetail({ productSlug, onNavigate }: ProductDetailProps) {
+export default function ProductDetail({ productSlug, onNavigate, language }: ProductDetailProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +32,7 @@ export default function ProductDetail({ productSlug, onNavigate }: ProductDetail
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
       </div>
     );
   }
@@ -39,12 +41,12 @@ export default function ProductDetail({ productSlug, onNavigate }: ProductDetail
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{language === 'tr' ? 'Ürün Bulunamadı' : 'Product Not Found'}</h2>
           <button
             onClick={() => onNavigate('products')}
-            className="text-blue-600 hover:text-blue-700 font-medium"
+            className="text-red-600 hover:text-red-700 font-medium"
           >
-            Return to Products
+            {language === 'tr' ? 'Ürünlere Dön' : 'Return to Products'}
           </button>
         </div>
       </div>

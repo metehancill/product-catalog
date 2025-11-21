@@ -1,26 +1,33 @@
 // src/components/Header.tsx
 
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import logo from "../assets/logo.png"; // PNG versiyonun
+import { Menu, X, Languages } from "lucide-react";
+import logo from "../assets/logo.png";
+import { Language, translations } from '../translations'; // PNG versiyonun
 
 type HeaderProps = {
   currentPage: string;
   onNavigate: (page: string) => void;
+  language: Language;
+  onLanguageChange: (lang: Language) => void;
 };
 
 const navItems = [
-  { name: "Anasayfa", path: "home" },
-  { name: "Ürünler", path: "products" },
-  { name: "E-Katalog", path: "catalog" },
-  { name: "Hakkımızda", path: "about" },
-  { name: "İletişim", path: "contact" },
+  { nameKey: "home", path: "home" },
+  { nameKey: "products", path: "products" },
+  { nameKey: "catalog", path: "catalog" },
+  { nameKey: "about", path: "about" },
+  { nameKey: "contact", path: "contact" },
 ];
 
-export default function Header({ currentPage, onNavigate }: HeaderProps) {
+export default function Header({ currentPage, onNavigate, language, onLanguageChange }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const t = translations[language].header;
   const red = "rgba(226, 6, 18, 1)";
+
+  const toggleLanguage = () => {
+    onLanguageChange(language === 'tr' ? 'en' : 'tr');
+  };
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -61,9 +68,17 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
                       : undefined,
                 }}
               >
-                {item.name}
+                {t[item.nameKey as keyof typeof t]}
               </button>
             ))}
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center space-x-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              title={language === 'tr' ? 'Switch to English' : 'Türkçeye Geç'}
+            >
+              <Languages className="h-4 w-4" />
+              <span className="text-sm font-medium">{language.toUpperCase()}</span>
+            </button>
           </nav>
 
           {/* MOBILE MENU BUTTON */}
@@ -96,9 +111,16 @@ export default function Header({ currentPage, onNavigate }: HeaderProps) {
                       currentPage === item.path ? red : undefined,
                   }}
                 >
-                  {item.name}
+                  {t[item.nameKey as keyof typeof t]}
                 </button>
               ))}
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors w-fit"
+              >
+                <Languages className="h-4 w-4" />
+                <span className="text-sm font-medium">{language === 'tr' ? 'EN' : 'TR'}</span>
+              </button>
             </nav>
           </div>
         )}

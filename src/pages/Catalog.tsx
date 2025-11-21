@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react';
 import { api, CatalogPDF } from '../lib/api';
 import { Download, FileText } from 'lucide-react';
+import { Language, translations } from '../translations';
 
-export default function Catalog() {
+type CatalogProps = {
+  language: Language;
+};
+
+export default function Catalog({ language }: CatalogProps) {
   const [pdf, setPdf] = useState<CatalogPDF | null>(null);
   const [loading, setLoading] = useState(true);
+  const t = translations[language].catalog;
 
   useEffect(() => {
     loadCatalog();
@@ -33,8 +39,8 @@ export default function Catalog() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">E-Katalog</h1>
-              <p className="text-gray-600">Ürün kataloğumuzu görüntüleyin ve indirin</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{t.title}</h1>
+              <p className="text-gray-600">{t.subtitle}</p>
             </div>
             {pdf && (
               <button
@@ -42,7 +48,7 @@ export default function Catalog() {
                 className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors inline-flex items-center space-x-2"
               >
                 <Download className="h-5 w-5" />
-                <span>İndir</span>
+                <span>{t.download}</span>
               </button>
             )}
           </div>
@@ -67,8 +73,8 @@ export default function Catalog() {
         ) : (
           <div className="bg-white rounded-lg shadow-lg p-12 text-center">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Katalog Bulunamadı</h3>
-            <p className="text-gray-600">Şu anda görüntülenebilecek bir katalog bulunmamaktadır.</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{language === 'tr' ? 'Katalog Bulunamadı' : 'Catalog Not Found'}</h3>
+            <p className="text-gray-600">{t.noCatalogs}</p>
           </div>
         )}
       </div>

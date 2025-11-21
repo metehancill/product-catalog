@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { api, Product } from '../lib/api';
 import ProductCard from '../components/ProductCard';
+import { Language, translations } from '../translations';
 
 type ProductsProps = {
   onNavigate: (page: string, productSlug?: string) => void;
+  language: Language;
 };
 
-export default function Products({ onNavigate }: ProductsProps) {
+export default function Products({ onNavigate, language }: ProductsProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = translations[language].products;
 
   useEffect(() => {
     loadProducts();
@@ -30,9 +33,9 @@ export default function Products({ onNavigate }: ProductsProps) {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Ürünlerimiz</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t.title}</h1>
           <p className="text-xl text-red-100">
-            Geniş ürün yelpazemizi keşfedin
+            {t.subtitle}
           </p>
         </div>
       </div>
@@ -54,7 +57,7 @@ export default function Products({ onNavigate }: ProductsProps) {
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-            <p className="text-gray-500 text-lg">Ürün bulunamadı</p>
+            <p className="text-gray-500 text-lg">{t.noProducts}</p>
           </div>
         )}
       </div>
