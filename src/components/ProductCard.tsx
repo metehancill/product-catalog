@@ -1,4 +1,4 @@
-import { Product } from '../lib/supabase';
+import { Product } from '../lib/api';
 import { Package } from 'lucide-react';
 
 type ProductCardProps = {
@@ -25,7 +25,7 @@ export default function ProductCard({ product, onClick }: ProductCardProps) {
       </div>
       <div className="p-6">
         <h3 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm line-clamp-3">{product.short_description}</p>
+        <p className="text-gray-600 text-sm line-clamp-3">{product.description}</p>
         <button className="mt-4 text-blue-600 font-medium text-sm hover:text-blue-700 transition-colors">
           Learn More →
         </button>

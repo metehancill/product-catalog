@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase, Product } from '../lib/supabase';
+import { api, Product } from '../lib/api';
 import ProductCard from '../components/ProductCard';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -48,15 +48,8 @@ export default function Home({ onNavigate }: HomeProps) {
 
   const loadFeaturedProducts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false })
-        .limit(3);
-
-      if (error) throw error;
-      setFeaturedProducts(data || []);
+      const data = await api.getProducts();
+      setFeaturedProducts(data.slice(0, 3));
     } catch (error) {
       console.error('Popüler ürünler yüklenirken bir hata oluştu : ', error);
     } finally {
@@ -156,7 +149,7 @@ export default function Home({ onNavigate }: HomeProps) {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onClick={() => onNavigate('product', product.slug)}
+                  onClick={() => onNavigate('product', product.id.toString())}
                 />
               ))}
             </div>
