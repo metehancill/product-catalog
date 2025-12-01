@@ -125,19 +125,7 @@ export default function Admin() {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
-              <p className="mt-1 text-sm text-gray-500">Maksimum dosya boyutu: 50MB</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Önizleme Görseli (Opsiyonel)
-              </label>
-              <input
-                type="file"
-                name="ThumbnailFile"
-                accept="image/*"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
+              <p className="mt-1 text-sm text-gray-500">PDF dosyası veritabanına kaydedilecek</p>
             </div>
 
             <button

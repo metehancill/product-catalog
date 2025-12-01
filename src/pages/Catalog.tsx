@@ -33,12 +33,27 @@ export default function Catalog({ language }: CatalogProps) {
 
   const handleDownload = () => {
     if (selectedCatalog) {
-      const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-      window.open(baseUrl + selectedCatalog.pdfUrl, '_blank');
+      const pdfBlob = base64ToBlob(selectedCatalog.pdfBase64, 'application/pdf');
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${selectedCatalog.title}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
   };
 
-  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+  const base64ToBlob = (base64: string, mimeType: string) => {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -115,7 +130,7 @@ export default function Catalog({ language }: CatalogProps) {
                   </div>
                   <div className="w-full" style={{ height: 'calc(100vh - 350px)' }}>
                     <iframe
-                      src={`${baseUrl}${selectedCatalog.pdfUrl}#toolbar=1&navpanes=1&view=FitH`}
+                      src={`data:application/pdf;base64,${selectedCatalog.pdfBase64}#toolbar=1&navpanes=1&view=FitH`}
                       className="w-full h-full"
                       title={selectedCatalog.title}
                     />

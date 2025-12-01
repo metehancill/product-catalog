@@ -31,8 +31,7 @@ export type CatalogPDF = {
   id: number;
   title: string;
   description?: string;
-  pdfUrl: string;
-  thumbnailUrl?: string;
+  pdfBase64: string;
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;

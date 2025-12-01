@@ -69,8 +69,7 @@ BEGIN
         Id INT IDENTITY(1,1) PRIMARY KEY,
         Title NVARCHAR(200) NOT NULL,
         Description NVARCHAR(500),
-        PdfUrl NVARCHAR(500) NOT NULL,
-        ThumbnailUrl NVARCHAR(500),
+        PdfBase64 NVARCHAR(MAX) NOT NULL,
         IsActive BIT NOT NULL DEFAULT 1,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
         UpdatedAt DATETIME2

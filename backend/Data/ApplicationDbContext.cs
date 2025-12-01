@@ -48,8 +48,7 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Description).HasMaxLength(500);
-            entity.Property(e => e.PdfUrl).IsRequired().HasMaxLength(500);
-            entity.Property(e => e.ThumbnailUrl).HasMaxLength(500);
+            entity.Property(e => e.PdfBase64).IsRequired();
             entity.HasIndex(e => e.IsActive);
         });
     }

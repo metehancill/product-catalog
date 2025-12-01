@@ -49,26 +49,19 @@ public class CatalogsController : ControllerBase
             return BadRequest("PDF file is required");
         }
 
-        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "catalogs");
-        Directory.CreateDirectory(uploadsFolder);
-
-        var pdfFileName = $"{Guid.NewGuid()}_{dto.PdfFile.FileName}";
-        var pdfPath = Path.Combine(uploadsFolder, pdfFileName);
-
-        using (var stream = new FileStream(pdfPath, FileMode.Create))
+        string pdfBase64;
+        using (var memoryStream = new MemoryStream())
         {
-            await dto.PdfFile.CopyToAsync(stream);
+            await dto.PdfFile.CopyToAsync(memoryStream);
+            var pdfBytes = memoryStream.ToArray();
+            pdfBase64 = Convert.ToBase64String(pdfBytes);
         }
-
-        var pdfUrl = $"/uploads/catalogs/{pdfFileName}";
-        var thumbnailUrl = dto.ThumbnailFile != null ? await SaveThumbnail(dto.ThumbnailFile) : null;
 
         var catalog = new Catalog
         {
             Title = dto.Title,
             Description = dto.Description,
-            PdfUrl = pdfUrl,
-            ThumbnailUrl = thumbnailUrl,
+            PdfBase64 = pdfBase64,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -93,29 +86,12 @@ public class CatalogsController : ControllerBase
 
         if (dto.PdfFile != null && dto.PdfFile.Length > 0)
         {
-            DeleteFile(catalog.PdfUrl);
-
-            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "catalogs");
-            Directory.CreateDirectory(uploadsFolder);
-
-            var pdfFileName = $"{Guid.NewGuid()}_{dto.PdfFile.FileName}";
-            var pdfPath = Path.Combine(uploadsFolder, pdfFileName);
-
-            using (var stream = new FileStream(pdfPath, FileMode.Create))
+            using (var memoryStream = new MemoryStream())
             {
-                await dto.PdfFile.CopyToAsync(stream);
+                await dto.PdfFile.CopyToAsync(memoryStream);
+                var pdfBytes = memoryStream.ToArray();
+                catalog.PdfBase64 = Convert.ToBase64String(pdfBytes);
             }
-
-            catalog.PdfUrl = $"/uploads/catalogs/{pdfFileName}";
-        }
-
-        if (dto.ThumbnailFile != null && dto.ThumbnailFile.Length > 0)
-        {
-            if (!string.IsNullOrEmpty(catalog.ThumbnailUrl))
-            {
-                DeleteFile(catalog.ThumbnailUrl);
-            }
-            catalog.ThumbnailUrl = await SaveThumbnail(dto.ThumbnailFile);
         }
 
         await _context.SaveChangesAsync();
@@ -138,32 +114,6 @@ public class CatalogsController : ControllerBase
         return NoContent();
     }
 
-    private async Task<string> SaveThumbnail(IFormFile file)
-    {
-        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "thumbnails");
-        Directory.CreateDirectory(uploadsFolder);
-
-        var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        return $"/uploads/thumbnails/{fileName}";
-    }
-
-    private void DeleteFile(string url)
-    {
-        if (string.IsNullOrEmpty(url)) return;
-
-        var filePath = Path.Combine(_environment.WebRootPath, url.TrimStart('/'));
-        if (System.IO.File.Exists(filePath))
-        {
-            System.IO.File.Delete(filePath);
-        }
-    }
 }
 
 public class CatalogUploadDto
@@ -171,7 +121,6 @@ public class CatalogUploadDto
     public required string Title { get; set; }
     public string? Description { get; set; }
     public required IFormFile PdfFile { get; set; }
-    public IFormFile? ThumbnailFile { get; set; }
 }
 
 public class CatalogUpdateDto
@@ -179,5 +128,4 @@ public class CatalogUpdateDto
     public string? Title { get; set; }
     public string? Description { get; set; }
     public IFormFile? PdfFile { get; set; }
-    public IFormFile? ThumbnailFile { get; set; }
 }
