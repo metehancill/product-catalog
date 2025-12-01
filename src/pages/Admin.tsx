@@ -1,147 +1,197 @@
-import { FileText, Database, Image } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { FileText, Upload, Trash2, AlertCircle } from 'lucide-react';
+import { api, CatalogPDF } from '../lib/api';
 
 export default function Admin() {
+  const [catalogs, setCatalogs] = useState<CatalogPDF[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadCatalogs();
+  }, []);
+
+  const loadCatalogs = async () => {
+    try {
+      setLoading(true);
+      const data = await api.getCatalogs();
+      setCatalogs(data);
+    } catch (err) {
+      setError('Kataloglar yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setUploading(true);
+
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      await api.uploadCatalog(formData);
+      setSuccess('Katalog başarıyla yüklendi!');
+      e.currentTarget.reset();
+      loadCatalogs();
+    } catch (err) {
+      setError('Katalog yüklenirken hata oluştu');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Bu kataloğu silmek istediğinize emin misiniz?')) {
+      return;
+    }
+
+    try {
+      await api.deleteCatalog(id);
+      setSuccess('Katalog silindi');
+      loadCatalogs();
+    } catch (err) {
+      setError('Katalog silinirken hata oluştu');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Admin Panel</h1>
-          <p className="text-gray-600">Manage your products and catalog via phpMyAdmin</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Yönetim Paneli</h1>
+          <p className="text-gray-600">E-Katalog yükleyin ve yönetin</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <Database className="h-8 w-8 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Manage Database</h2>
-            </div>
-            <p className="text-gray-600 mb-4">
-              Use phpMyAdmin in your cPanel to manage products and catalog.
-            </p>
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-blue-800 font-medium mb-2">Steps:</p>
-              <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-                <li>Login to cPanel</li>
-                <li>Open phpMyAdmin</li>
-                <li>Select your database</li>
-                <li>Manage products table</li>
-              </ol>
-            </div>
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-center">
+            <AlertCircle className="h-5 w-5 mr-2" />
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+            {success}
+          </div>
+        )}
+
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex items-center space-x-3 mb-6">
+            <Upload className="h-8 w-8 text-red-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Yeni E-Katalog Yükle</h2>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <Image className="h-8 w-8 text-green-600" />
-              <h2 className="text-xl font-bold text-gray-900">Add Products</h2>
+          <form onSubmit={handleUpload} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Katalog Başlığı *
+              </label>
+              <input
+                type="text"
+                name="Title"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Örn: 2024 Ürün Kataloğu"
+              />
             </div>
-            <p className="text-gray-600 mb-4">
-              Add new products through phpMyAdmin Insert tab.
-            </p>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-sm text-green-800 font-medium mb-2">Example SQL:</p>
-              <code className="text-xs text-green-700 block bg-white p-2 rounded">
-                INSERT INTO products<br />
-                (name, description, image_url)<br />
-                VALUES<br />
-                ('Product Name', 'Description', 'https://...')
-              </code>
-            </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <FileText className="h-8 w-8 text-red-600" />
-              <h2 className="text-xl font-bold text-gray-900">Upload Catalog PDF</h2>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Açıklama
+              </label>
+              <textarea
+                name="Description"
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Katalog hakkında kısa açıklama..."
+              />
             </div>
-            <p className="text-gray-600 mb-4">
-              Upload PDF to server and add URL to database.
-            </p>
-            <div className="bg-red-50 p-4 rounded-lg">
-              <p className="text-sm text-red-800 font-medium mb-2">Steps:</p>
-              <ol className="text-sm text-red-700 space-y-1 list-decimal list-inside">
-                <li>Upload PDF to /uploads/pdfs/</li>
-                <li>Copy the file URL</li>
-                <li>Insert into catalog_pdf table</li>
-              </ol>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                PDF Dosyası *
+              </label>
+              <input
+                type="file"
+                name="PdfFile"
+                accept=".pdf"
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+              <p className="mt-1 text-sm text-gray-500">Maksimum dosya boyutu: 50MB</p>
             </div>
-          </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Önizleme Görseli (Opsiyonel)
+              </label>
+              <input
+                type="file"
+                name="ThumbnailFile"
+                accept="image/*"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={uploading}
+              className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {uploading ? 'Yükleniyor...' : 'Kataloğu Yükle'}
+            </button>
+          </form>
         </div>
 
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Database Tables</h2>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">products</h3>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-300">
-                      <th className="text-left py-2 px-3 font-semibold">Column</th>
-                      <th className="text-left py-2 px-3 font-semibold">Type</th>
-                      <th className="text-left py-2 px-3 font-semibold">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-700">
-                    <tr className="border-b border-gray-200">
-                      <td className="py-2 px-3">id</td>
-                      <td className="py-2 px-3">INT</td>
-                      <td className="py-2 px-3">Auto increment</td>
-                    </tr>
-                    <tr className="border-b border-gray-200">
-                      <td className="py-2 px-3">name</td>
-                      <td className="py-2 px-3">VARCHAR(255)</td>
-                      <td className="py-2 px-3">Product name</td>
-                    </tr>
-                    <tr className="border-b border-gray-200">
-                      <td className="py-2 px-3">description</td>
-                      <td className="py-2 px-3">TEXT</td>
-                      <td className="py-2 px-3">Product description</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 px-3">image_url</td>
-                      <td className="py-2 px-3">VARCHAR(500)</td>
-                      <td className="py-2 px-3">Image URL</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">catalog_pdf</h3>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-300">
-                      <th className="text-left py-2 px-3 font-semibold">Column</th>
-                      <th className="text-left py-2 px-3 font-semibold">Type</th>
-                      <th className="text-left py-2 px-3 font-semibold">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-700">
-                    <tr className="border-b border-gray-200">
-                      <td className="py-2 px-3">id</td>
-                      <td className="py-2 px-3">INT</td>
-                      <td className="py-2 px-3">Auto increment</td>
-                    </tr>
-                    <tr className="border-b border-gray-200">
-                      <td className="py-2 px-3">file_url</td>
-                      <td className="py-2 px-3">VARCHAR(500)</td>
-                      <td className="py-2 px-3">PDF file URL</td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 px-3">uploaded_at</td>
-                      <td className="py-2 px-3">TIMESTAMP</td>
-                      <td className="py-2 px-3">Upload timestamp</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="flex items-center space-x-3 mb-6">
+            <FileText className="h-8 w-8 text-gray-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Mevcut Kataloglar</h2>
           </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            </div>
+          ) : catalogs.length === 0 ? (
+            <p className="text-gray-500 text-center py-12">Henüz katalog yüklenmemiş</p>
+          ) : (
+            <div className="space-y-4">
+              {catalogs.map((catalog) => (
+                <div
+                  key={catalog.id}
+                  className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center space-x-4">
+                    <FileText className="h-10 w-10 text-red-600" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{catalog.title}</h3>
+                      {catalog.description && (
+                        <p className="text-sm text-gray-600 mt-1">{catalog.description}</p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        Yüklenme: {new Date(catalog.createdAt).toLocaleDateString('tr-TR')}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(catalog.id)}
+                    className="text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                    title="Sil"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

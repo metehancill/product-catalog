@@ -27,6 +27,17 @@ export type Category = {
   products?: Product[];
 };
 
+export type CatalogPDF = {
+  id: number;
+  title: string;
+  description?: string;
+  pdfUrl: string;
+  thumbnailUrl?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+};
+
 export const api = {
   async getProducts(): Promise<Product[]> {
     try {
@@ -132,6 +143,65 @@ export const api = {
       return data;
     } catch (error) {
       console.error('Error fetching category:', error);
+      throw error;
+    }
+  },
+
+  async getCatalogs(): Promise<CatalogPDF[]> {
+    try {
+      const response = await fetch(`${API_URL}/catalogs`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch catalogs: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching catalogs:', error);
+      throw error;
+    }
+  },
+
+  async getCatalog(id: number): Promise<CatalogPDF> {
+    try {
+      const response = await fetch(`${API_URL}/catalogs/${id}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch catalog: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching catalog:', error);
+      throw error;
+    }
+  },
+
+  async uploadCatalog(formData: FormData): Promise<CatalogPDF> {
+    try {
+      const response = await fetch(`${API_URL}/catalogs`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to upload catalog: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error uploading catalog:', error);
+      throw error;
+    }
+  },
+
+  async deleteCatalog(id: number): Promise<void> {
+    try {
+      const response = await fetch(`${API_URL}/catalogs/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete catalog: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error deleting catalog:', error);
       throw error;
     }
   },

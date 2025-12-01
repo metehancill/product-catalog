@@ -61,3 +61,20 @@ BEGIN
     ('Denim Jeans', 'Classic fit denim jeans', 'Timeless denim jeans with classic fit, reinforced stitching, and comfortable stretch fabric.', 79.99, 'https://images.pexels.com/photos/1598507/pexels-photo-1598507.jpeg?auto=compress&cs=tinysrgb&w=800', 3);
 END
 GO
+
+-- Catalogs Table
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Catalogs')
+BEGIN
+    CREATE TABLE Catalogs (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Title NVARCHAR(200) NOT NULL,
+        Description NVARCHAR(500),
+        PdfUrl NVARCHAR(500) NOT NULL,
+        ThumbnailUrl NVARCHAR(500),
+        IsActive BIT NOT NULL DEFAULT 1,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        UpdatedAt DATETIME2
+    );
+    CREATE INDEX idx_catalogs_isactive ON Catalogs(IsActive);
+END
+GO

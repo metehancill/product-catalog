@@ -67,9 +67,9 @@ export default function ProductDetail({ productSlug, onNavigate, language }: Pro
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-              {product.image_url ? (
+              {product.imageUrl ? (
                 <img
-                  src={product.image_url}
+                  src={product.imageUrl}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
@@ -79,22 +79,62 @@ export default function ProductDetail({ productSlug, onNavigate, language }: Pro
             </div>
 
             <div className="p-8 lg:p-12">
-              <h1 className="text-4xl font-bold text-gray-900 mb-6">{product.name}</h1>
+              <div className="mb-6">
+                {product.category && (
+                  <span className="inline-block bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
+                    {product.category.name}
+                  </span>
+                )}
+                <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
+              </div>
+
+              {product.price > 0 && (
+                <div className="mb-6">
+                  <span className="text-3xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
+                </div>
+              )}
 
               <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Description</h2>
-                  <div className="text-gray-600 leading-relaxed whitespace-pre-line">
-                    {product.description || 'No description available.'}
+                {product.shortDescription && (
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-3">
+                      {language === 'tr' ? 'Kısa Açıklama' : 'Overview'}
+                    </h2>
+                    <p className="text-gray-700 leading-relaxed">
+                      {product.shortDescription}
+                    </p>
                   </div>
-                </div>
+                )}
 
-                <div className="pt-6">
+                {product.fullDescription && (
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-3">
+                      {language === 'tr' ? 'Detaylı Açıklama' : 'Description'}
+                    </h2>
+                    <div className="text-gray-600 leading-relaxed whitespace-pre-line">
+                      {product.fullDescription}
+                    </div>
+                  </div>
+                )}
+
+                {!product.shortDescription && !product.fullDescription && (
+                  <p className="text-gray-500 italic">
+                    {language === 'tr' ? 'Açıklama mevcut değil.' : 'No description available.'}
+                  </p>
+                )}
+
+                <div className="pt-6 flex flex-wrap gap-4">
                   <button
                     onClick={() => onNavigate('contact')}
-                    className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors"
                   >
-                    Request More Information
+                    {language === 'tr' ? 'İletişime Geç' : 'Contact Us'}
+                  </button>
+                  <button
+                    onClick={() => onNavigate('catalog')}
+                    className="bg-gray-100 text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                  >
+                    {language === 'tr' ? 'Kataloğu Görüntüle' : 'View Catalog'}
                   </button>
                 </div>
               </div>
