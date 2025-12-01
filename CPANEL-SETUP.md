@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 define('DB_HOST', 'localhost');
-define('DB_USER', 'your_mysql_username');  // CHANGE THIS
-define('DB_PASS', 'your_mysql_password');  // CHANGE THIS
-define('DB_NAME', 'your_database_name');   // CHANGE THIS
+define('DB_USER', 'root');  // CHANGE THIS
+define('DB_PASS', 'GucluBirSifre123!');  // CHANGE THIS
+define('DB_NAME', 'bes_yildizlar');   // CHANGE THIS
 
 function getConnection() {
     try {
