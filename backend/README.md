@@ -1,11 +1,11 @@
 # Catalog API - .NET Core Backend
 
-A RESTful API built with .NET Core 8.0 and MySQL for managing product catalogs.
+A RESTful API built with .NET Core 8.0 and SQL Server LocalDB for managing product catalogs.
 
 ## Prerequisites
 
 - .NET 8.0 SDK or later
-- MySQL Server 8.0 or later
+- SQL Server LocalDB (included with Visual Studio or can be installed separately)
 - Your favorite IDE (Visual Studio, VS Code, or Rider)
 
 ## Setup Instructions
@@ -14,35 +14,26 @@ A RESTful API built with .NET Core 8.0 and MySQL for managing product catalogs.
 
 Download and install from: https://dotnet.microsoft.com/download/dotnet/8.0
 
-### 2. Setup MySQL Database
+### 2. Install SQL Server LocalDB
 
-1. Install MySQL Server if not already installed
-2. Create the database and tables:
+LocalDB comes with Visual Studio, or download separately:
+https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb
 
+Verify installation:
 ```bash
-mysql -u root -p < database_schema.sql
+sqllocaldb info
 ```
 
-Or manually create the database:
-- Database name: `catalog_db`
-- Run the SQL script in `database_schema.sql`
+### 3. Database Connection
 
-### 3. Configure Database Connection
+The application is configured to use SQL Server LocalDB with the database name `YILDIZLAR`.
 
-Update the connection string in `appsettings.json` or `appsettings.Development.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=catalog_db;User=root;Password=yourpassword;"
-  }
-}
+Connection string (already configured in `appsettings.json`):
+```
+Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=YILDIZLAR;Integrated Security=True
 ```
 
-Replace:
-- `localhost` with your MySQL server address
-- `root` with your MySQL username
-- `yourpassword` with your MySQL password
+No password needed - Windows Authentication is used automatically.
 
 ### 4. Install Dependencies
 
@@ -51,13 +42,26 @@ cd backend
 dotnet restore
 ```
 
-### 5. Run Database Migrations (Optional)
+### 5. Create Database Using Entity Framework Migrations
 
-If you want to use Entity Framework migrations instead of the SQL script:
+The easiest way to create the database is using Entity Framework migrations:
 
 ```bash
+cd backend
 dotnet ef migrations add InitialCreate
 dotnet ef database update
+```
+
+This will:
+- Create the `YILDIZLAR` database automatically
+- Create `Categories` and `Products` tables
+- Add all necessary indexes and relationships
+
+**Alternative: Use SQL Script**
+
+If you prefer to use the SQL script directly, connect to LocalDB and run:
+```bash
+sqlcmd -S "(localdb)\MSSQLLocalDB" -i database_schema.sql
 ```
 
 ### 6. Run the API
@@ -138,10 +142,14 @@ dotnet publish -c Release -o ./publish
 
 ## Environment Variables
 
-You can also configure the connection string using environment variables:
+You can override the connection string using environment variables:
 
 ```bash
-export ConnectionStrings__DefaultConnection="Server=localhost;Database=catalog_db;User=root;Password=yourpassword;"
+# Windows
+set ConnectionStrings__DefaultConnection="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=YILDIZLAR;Integrated Security=True"
+
+# Linux/Mac (if using SQL Server on those platforms)
+export ConnectionStrings__DefaultConnection="Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=YILDIZLAR;Integrated Security=True"
 ```
 
 ## CORS Configuration
@@ -166,9 +174,10 @@ builder.Services.AddCors(options =>
 ### Connection Issues
 
 If you get a connection error:
-1. Verify MySQL is running: `sudo systemctl status mysql`
-2. Check your connection string credentials
-3. Ensure the database exists: `mysql -u root -p -e "SHOW DATABASES;"`
+1. Verify LocalDB is installed: `sqllocaldb info`
+2. Start LocalDB instance if needed: `sqllocaldb start MSSQLLocalDB`
+3. Check if database exists: `sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "SELECT name FROM sys.databases"`
+4. If database doesn't exist, run migrations: `dotnet ef database update`
 
 ### Port Already in Use
 
