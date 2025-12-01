@@ -99,6 +99,13 @@ export default function Footer({ onNavigate, language }: FooterProps) {
             <button className="hover:text-blue-400 transition-colors">Gizlilik politikası</button>
             <span>|</span>
             <button className="hover:text-blue-400 transition-colors">KVKK</button>
+            <span>|</span>
+            <button
+              onClick={() => onNavigate('admin')}
+              className="hover:text-red-400 transition-colors"
+            >
+              Admin
+            </button>
           </div>
         </div>
       </div>
