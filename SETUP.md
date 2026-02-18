@@ -1,125 +1,213 @@
-# Setup Guide - Catalog Application
+# Kurulum Rehberi
 
-This application uses React for the frontend and .NET Core with MySQL for the backend.
+## Ön Gereksinimler
 
-## Quick Start
+Aşağıdaki yazılımları yükleyin:
 
-### Backend Setup
+1. **.NET 8.0 SDK**
+   - https://dotnet.microsoft.com/download/dotnet/8.0
+   - Kontrol: `dotnet --version`
 
-1. **Install .NET 8.0 SDK**
-   - Download from: https://dotnet.microsoft.com/download/dotnet/8.0
+2. **SQL Server 2019 veya üstü**
+   - https://www.microsoft.com/en-us/sql-server/sql-server-downloads
+   - Windows: SQL Server Express (free) uygun
+   - Linux/Mac: Docker kullanarak `docker run -e ACCEPT_EULA=Y -e SA_PASSWORD=YourPassword -p 1433:1433 -d mcr.microsoft.com/mssql/server`
 
-2. **Install MySQL Server**
-   - Download from: https://dev.mysql.com/downloads/mysql/
+3. **Node.js 18+**
+   - https://nodejs.org/ (LTS version)
+   - Kontrol: `node --version` ve `npm --version`
 
-3. **Create Database**
-   ```bash
-   mysql -u root -p < backend/database_schema.sql
-   ```
+4. **Git (opsiyonel)**
+   - https://git-scm.com/
 
-4. **Configure Connection**
-   - Edit `backend/appsettings.json`
-   - Update the connection string with your MySQL credentials
+## Backend Kurulumu
 
-5. **Run Backend**
-   ```bash
-   cd backend
-   dotnet restore
-   dotnet run
-   ```
-   - Backend will run on `http://localhost:5000`
-   - API docs available at `http://localhost:5000/swagger`
+### 1. Veritabanı Ayarı
 
-### Frontend Setup
+**SQL Server'a bağlan (SSMS veya sqlcmd):**
 
-1. **Install Node.js**
-   - Download from: https://nodejs.org/ (LTS version)
+```bash
+# Windows
+sqlcmd -S (localdb)\mssqlocaldb -U sa -P YourPassword
 
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure Environment**
-   - Copy `.env.example` to `.env`
-   - Update `VITE_API_URL` if backend runs on different port
-
-4. **Run Frontend**
-   ```bash
-   npm run dev
-   ```
-   - Frontend will run on `http://localhost:5173`
-
-## Project Structure
-
-```
-project/
-├── backend/              # .NET Core API
-│   ├── Controllers/      # API endpoints
-│   ├── Models/           # Data models
-│   ├── Data/             # Database context
-│   ├── database_schema.sql
-│   └── README.md         # Backend documentation
-├── src/                  # React frontend
-│   ├── components/       # React components
-│   ├── pages/            # Page components
-│   └── lib/              # API client
-├── .env                  # Environment variables
-└── package.json          # Frontend dependencies
+# veya
+sqlcmd -S localhost -U sa -P YourPassword
 ```
 
-## API Endpoints
+**Veritabanı şemasını import et:**
 
-The backend provides RESTful endpoints:
+```bash
+sqlcmd -S (localdb)\mssqlocaldb -U sa -P YourPassword -i backend\database_schema.sql
+```
 
-- `GET /api/products` - List all products
-- `GET /api/products/{id}` - Get product details
-- `POST /api/products` - Create product
-- `PUT /api/products/{id}` - Update product
-- `DELETE /api/products/{id}` - Delete product
-- `GET /api/categories` - List all categories
-- `GET /api/categories/{id}` - Get category with products
+### 2. Bağlantı Stringi Ayarla
 
-## Development Workflow
+`backend/appsettings.Development.json` dosyasını aç:
 
-1. Start MySQL server
-2. Start backend API: `cd backend && dotnet run`
-3. Start frontend dev server: `npm run dev`
-4. Open browser to `http://localhost:5173`
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqlocaldb;Database=YILDIZLAR;Trusted_Connection=true;"
+  }
+}
+```
 
-## Building for Production
+Veya SQL Server Authentication kullanıyorsan:
 
-### Backend
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=YILDIZLAR;User Id=sa;Password=YourPassword;"
+  }
+}
+```
+
+### 3. Backend'i Başlat
+
+```bash
+cd backend
+dotnet restore
+dotnet run
+```
+
+**Çıkış:**
+```
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+```
+
+**API Swagger UI:** http://localhost:5000/swagger
+
+## Frontend Kurulumu
+
+### 1. Bağımlılıkları Kur
+
+```bash
+npm install
+```
+
+### 2. Environment Ayarı
+
+`.env` dosyasını kontrol et:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 3. Development Server Başlat
+
+```bash
+npm run dev
+```
+
+**Çıkış:**
+```
+  VITE v5.4.2  ready in 123 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  press h to show help
+```
+
+Frontend: http://localhost:5173
+
+## Bilgisayarı Kontrol Et
+
+Tüm sistem başladıktan sonra:
+
+1. ✅ SQL Server çalışıyor
+2. ✅ Backend: http://localhost:5000 erişilebilir
+3. ✅ Swagger UI: http://localhost:5000/swagger
+4. ✅ Frontend: http://localhost:5173 erişilebilir
+
+## İlk Kullanım
+
+1. Tarayıcıda: http://localhost:5173
+2. Sayfayı gezin, ürünleri görüntüleyin
+3. Sayfanın alt kısmında "Admin" linkine tıklayın
+4. PDF katalog yükleyin
+5. "Katalog" sayfasında PDF'i görüntüleyin
+
+## Sorun Giderme
+
+### Backend başlamıyor
+```
+❌ "Cannot connect to SQL Server"
+```
+
+**Çözüm:**
+- SQL Server çalışıyor mu? SQL Server Management Studio ile kontrol et
+- Connection string doğru mu? `appsettings.Development.json` kontrol et
+- Veritabanı var mı? `SELECT * FROM sys.databases WHERE name='YILDIZLAR'`
+
+### Frontend başlamıyor
+```
+❌ "Port 5173 already in use"
+```
+
+**Çözüm:**
+```bash
+# Port 5173'ü kullanıyor olan işlemi kapat
+# Windows: netstat -ano | findstr :5173
+# Veya npm run dev -- --port 5174 ile farklı port kullan
+```
+
+### Frontend, Backend'e bağlanamıyor
+```
+❌ "CORS error" veya "Cannot reach API"
+```
+
+**Çözüm:**
+- Backend çalışıyor mu? http://localhost:5000/swagger açıp kontrol et
+- `.env` dosyasında `VITE_API_URL` doğru mu?
+- Tarayıcı DevTools'ta konsol hatasını kontrol et
+
+### PDF yüklenemiyor
+```
+❌ "Failed to upload catalog"
+```
+
+**Çözüm:**
+- Dosya PDF mi?
+- Dosya boyutu 50MB'dan küçük mü?
+- Backend konsol hatasını kontrol et
+
+## Production Deployment
+
+### 1. Build Et
+
+**Frontend:**
+```bash
+npm run build
+```
+
+**Backend:**
 ```bash
 cd backend
 dotnet publish -c Release -o ./publish
 ```
 
-### Frontend
-```bash
-npm run build
-```
+### 2. Deploy Et
 
-The build output will be in the `dist/` folder.
+Hosting sağlayıcıdan sunucuya yükle (IIS, Linux, Azure, vb.)
 
-## Troubleshooting
+### 3. Environment Ayarları
 
-### Backend won't start
-- Check MySQL is running
-- Verify connection string in `appsettings.json`
-- Ensure database `catalog_db` exists
+Production için `appsettings.json` güncelle:
+- Connection string
+- CORS politikası
+- HTTPS zorunlu kılma
 
-### Frontend can't connect to API
-- Verify backend is running on correct port
-- Check `.env` file has correct `VITE_API_URL`
-- Clear browser cache and hard refresh
+## Özel Notlar
 
-### CORS errors
-- Backend has CORS enabled for all origins in development
-- For production, update CORS policy in `backend/Program.cs`
+- **Veritabanı Adı:** `YILDIZLAR`
+- **Backend Port:** `5000` (değiştirilebilir)
+- **Frontend Port:** `5173` (değiştirilebilir)
+- **PDF Storage:** Base64 formatında SQL Server'da saklanır
+- **Admin Password:** Yok (açık erişim)
 
-## Additional Resources
+## Bağlantılar
 
-- .NET Core Documentation: https://docs.microsoft.com/dotnet/core/
-- React Documentation: https://react.dev/
-- MySQL Documentation: https://dev.mysql.com/doc/
+- [.NET Documentation](https://docs.microsoft.com/dotnet/)
+- [React Documentation](https://react.dev/)
+- [SQL Server Documentation](https://docs.microsoft.com/en-us/sql/)
+- [Vite Documentation](https://vitejs.dev/)
